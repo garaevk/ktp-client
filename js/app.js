@@ -240,17 +240,29 @@ class KtpApp {
             this.addHoliday({ name: 'Весенние каникулы', start: '2026-03-28', end: '2026-04-05' });
         }
 
-        // Праздничные дни
+        // Праздничные дни — всегда начинаем с дефолтных
+        const defaultHolidays = [
+            { date: '2025-11-04', name: 'День народного единства' },
+            { date: '2025-11-06', name: 'Дополнительный выходной' },
+            { date: '2026-02-23', name: 'День защитника Отечества' },
+            { date: '2026-03-08', name: 'Международный женский день' },
+            { date: '2026-03-09', name: 'Выходной (перенос)' },
+            { date: '2026-05-01', name: 'Праздник Весны и Труда' },
+            { date: '2026-05-09', name: 'День Победы' }
+        ];
+        
+        // Добавляем дефолтные праздники
+        defaultHolidays.forEach(sh => this.addSpecialHoliday(sh));
+        
+        // Добавляем праздники из PDF, которых нет в дефолтных
         if (this.calendarData && this.calendarData.specialHolidays && this.calendarData.specialHolidays.length > 0) {
-            this.calendarData.specialHolidays.forEach(sh => this.addSpecialHoliday(sh));
-        } else {
-            this.addSpecialHoliday({ date: '2025-11-04', name: 'День народного единства' });
-            this.addSpecialHoliday({ date: '2025-11-06', name: 'Дополнительный выходной' });
-            this.addSpecialHoliday({ date: '2026-02-23', name: 'День защитника Отечества' });
-            this.addSpecialHoliday({ date: '2026-03-08', name: 'Международный женский день' });
-            this.addSpecialHoliday({ date: '2026-03-09', name: 'Выходной (перенос)' });
-            this.addSpecialHoliday({ date: '2026-05-01', name: 'Праздник Весны и Труда' });
-            this.addSpecialHoliday({ date: '2026-05-09', name: 'День Победы' });
+            this.calendarData.specialHolidays.forEach(sh => {
+                const dateStr = this.formatDateForInput(sh.date);
+                const exists = defaultHolidays.some(dh => this.formatDateForInput(dh.date) === dateStr);
+                if (!exists) {
+                    this.addSpecialHoliday(sh);
+                }
+            });
         }
     }
 

@@ -86,64 +86,80 @@ class PdfParser {
             }
         }
 
-        // Ищем каникулы и выходные/праздничные дни по ключевым словам
-        const datePattern = /(\d{1,2})[. ](\d{1,2})[. ](\d{4})/g;
-        const keywords = ['каникул', 'выходн', 'праздн'];
-        
-        for (const kw of keywords) {
-            const kwPattern = new RegExp(kw, 'gi');
-            let kwMatch;
-            while ((kwMatch = kwPattern.exec(text)) !== null) {
-                // Ищем даты в окрестности ключевого слова (±150 символов)
-                const start = Math.max(0, kwMatch.index - 50);
-                const end = Math.min(text.length, kwMatch.index + 150);
-                const context = text.substring(start, end);
+        // Ищем каникулы по ключевому слову "каникул"
+        const kwKanikul = /каникул/gi;
+        let kwMatch;
+        while ((kwMatch = kwKanikul.exec(text)) !== null) {
+            // Ищем даты в окрестности ключевого слова (±100 символов)
+            const start = Math.max(0, kwMatch.index - 50);
+            const end = Math.min(text.length, kwMatch.index + 100);
+            const context = text.substring(start, end);
+            
+            const datesFound = [];
+            const dateRegex = /(\d{1,2})[. ](\d{1,2})[. ](\d{4})/g;
+            let dateMatch;
+            while ((dateMatch = dateRegex.exec(context)) !== null) {
+                const d = this.parseDate(`${dateMatch[1]}.${dateMatch[2]}.${dateMatch[3]}`);
+                if (d) datesFound.push(d);
+            }
+            
+            if (datesFound.length >= 2) {
+                const before = text.substring(Math.max(0, kwMatch.index - 50), kwMatch.index);
+                const nameMatch = before.match(/([А-Яа-яё\s]+)$/i);
+                const name = nameMatch ? nameMatch[1].trim() : 'Каникулы';
                 
-                const datesFound = [];
-                const dateRegex = /(\d{1,2})[. ](\d{1,2})[. ](\d{4})/g;
-                let dateMatch;
-                while ((dateMatch = dateRegex.exec(context)) !== null) {
-                    const d = this.parseDate(`${dateMatch[1]}.${dateMatch[2]}.${dateMatch[3]}`);
-                    if (d) datesFound.push(d);
+                const startStr = this.formatDate(datesFound[0]);
+                const endStr = this.formatDate(datesFound[1]);
+                const exists = result.holidays.some(h => 
+                    this.formatDate(h.start) === startStr && this.formatDate(h.end) === endStr
+                );
+                
+                if (!exists) {
+                    result.holidays.push({
+                        name: name + ' каникулы',
+                        start: datesFound[0],
+                        end: datesFound[1]
+                    });
+                }
+            }
+        }
+
+        // Ищем праздничные/выходные дни по явным паттернам
+        // Паттерн: "DD.MM.YYYY - Название" или "Название: DD.MM.YYYY"
+        const specificPatterns = [
+            /(\d{1,2}[. ]\d{1,2}[. ]\d{4})\s*[-–]\s*([А-Яа-яё\s]+(?:выходн|праздн|день)[А-Яа-яё\s]*)/gi,
+            /([А-Яа-яё\s]*(?:выходн|праздн|день)[А-Яа-яё\s]*)[:\s]+(\d{1,2}[. ]\d{1,2}[. ]\d{4})/gi,
+            /(\d{1,2}[. ]\d{1,2}[. ]\d{4})\s*\n?\s*([А-Яа-яё\s]*(?:выходн|праздн)[А-Яа-яё\s]*)/gi
+        ];
+
+        for (const pattern of specificPatterns) {
+            let match;
+            while ((match = pattern.exec(text)) !== null) {
+                let dateStr, name;
+                if (match[1] && match[2]) {
+                    // Проверяем, что первая группа - это дата
+                    const d = this.parseDate(match[1]);
+                    if (d) {
+                        dateStr = this.formatDate(d);
+                        name = match[2].trim();
+                    } else {
+                        // Первая группа - название, вторая - дата
+                        const d2 = this.parseDate(match[2]);
+                        if (d2) {
+                            dateStr = this.formatDate(d2);
+                            name = match[1].trim();
+                        }
+                    }
                 }
                 
-                if (datesFound.length >= 2) {
-                    // Диапазон дат — это каникулы
-                    const before = text.substring(Math.max(0, kwMatch.index - 50), kwMatch.index);
-                    const nameMatch = before.match(/([А-Яа-яё\s]+)$/i);
-                    const name = nameMatch ? nameMatch[1].trim() : kw;
-                    
-                    // Проверяем, что такой диапазон ещё не добавлен
-                    const startStr = this.formatDate(datesFound[0]);
-                    const endStr = this.formatDate(datesFound[1]);
-                    const exists = result.holidays.some(h => 
-                        this.formatDate(h.start) === startStr && this.formatDate(h.end) === endStr
-                    );
-                    
-                    if (!exists) {
-                        result.holidays.push({
-                            name: name + (kw === 'каникул' ? ' каникулы' : ''),
-                            start: datesFound[0],
-                            end: datesFound[1]
-                        });
-                    }
-                } else if (datesFound.length === 1) {
-                    // Одна дата — это праздничный/выходной день
-                    const dateStr = this.formatDate(datesFound[0]);
-                    
-                    // Проверяем, что эта дата ещё не добавлена
+                if (dateStr && name) {
                     const exists = result.specialHolidays.some(sh => 
                         this.formatDate(sh.date) === dateStr
                     );
                     
                     if (!exists) {
-                        // Ищем название после даты
-                        const afterDate = context.substring(context.indexOf(dateStr.split('.').reverse().join('.')) + 10);
-                        const nameMatch = afterDate.match(/[–-]\s*([А-Яа-яё\s]+)/i);
-                        const name = nameMatch ? nameMatch[1].trim() : (kw === 'каникул' ? 'Каникулы' : 'Выходной');
-                        
                         result.specialHolidays.push({
-                            date: datesFound[0],
+                            date: this.parseDate(dateStr),
                             name: name
                         });
                     }
