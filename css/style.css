@@ -360,3 +360,21 @@ h2 {
     color: #999;
     cursor: not-allowed;
 }
+
+.contacts {
+    background: #f8f9fa;
+    padding: 15px 40px;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+    font-size: 0.95em;
+}
+
+.contacts a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contacts a:hover {
+    text-decoration: underline;
+}
