@@ -378,3 +378,12 @@ h2 {
 .contacts a:hover {
     text-decoration: underline;
 }
+
+.copyright {
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+}
