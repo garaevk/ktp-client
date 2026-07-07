@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КТП-генератор (клиентская версия)</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 КТП-генератор</h1>
+            <p class="subtitle">Клиентская версия — работает без сервера</p>
+        </header>
+
+        <main>
+            <!-- Шаг 1: Загрузка файлов -->
+            <section id="step1" class="step active">
+                <h2>Шаг 1: Загрузка файлов</h2>
+                
+                <div class="form-group">
+                    <label for="schoolName">Название школы:</label>
+                    <input type="text" id="schoolName" placeholder="МБОУ «Кузембетьевская СОШ им.Х.Г.Хусаинова»">
+                </div>
+
+                <div class="form-group">
+                    <label for="ktpFile">Файл КТП (.docx):</label>
+                    <input type="file" id="ktpFile" accept=".docx">
+                    <small>Загрузите файл с таблицей календарно-тематического планирования</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="calendarFile">Календарный учебный график (.pdf) — опционально:</label>
+                    <input type="file" id="calendarFile" accept=".pdf">
+                    <small>Если загрузите, даты будут взяты из календаря</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="grade">Класс:</label>
+                        <input type="text" id="grade" placeholder="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Предмет:</label>
+                        <input type="text" id="subject" placeholder="Геометрия">
+                    </div>
+                    <div class="form-group">
+                        <label for="level">Уровень:</label>
+                        <input type="text" id="level" placeholder="Углубленный">
+                    </div>
+                </div>
+
+                <button id="btnLoad" class="btn-primary">Загрузить и продолжить →</button>
+            </section>
+
+            <!-- Шаг 2: Выбор таблицы -->
+            <section id="step2" class="step">
+                <h2>Шаг 2: Выбор таблицы</h2>
+                <p>Найдено несколько таблиц в документе. Выберите нужную:</p>
+                <div id="tablesList"></div>
+                <button id="btnSelectTable" class="btn-primary">Продолжить →</button>
+            </section>
+
+            <!-- Шаг 3: Настройка дат -->
+            <section id="step3" class="step">
+                <h2>Шаг 3: Настройка дат</h2>
+                
+                <div class="form-group">
+                    <label>Дни недели и количество уроков:</label>
+                    <div class="days-config-grid">
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="1">
+                                Пн
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="1" min="0" max="8" value="1" disabled>
+                        </div>
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="2" checked>
+                                Вт
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="2" min="0" max="8" value="1">
+                        </div>
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="3">
+                                Ср
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="3" min="0" max="8" value="1" disabled>
+                        </div>
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="4" checked>
+                                Чт
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="4" min="0" max="8" value="1">
+                        </div>
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="5">
+                                Пт
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="5" min="0" max="8" value="1" disabled>
+                        </div>
+                        <div class="day-config-item">
+                            <label>
+                                <input type="checkbox" class="day-checkbox" value="6">
+                                Сб
+                            </label>
+                            <input type="number" class="lessons-per-day" data-day="6" min="0" max="8" value="1" disabled>
+                        </div>
+                    </div>
+                    <small>Отметьте дни недели и укажите количество уроков в каждый день</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Четверти:</label>
+                    <div id="quartersList"></div>
+                    <button id="btnAddQuarter" class="btn-secondary">+ Добавить четверть</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Каникулы:</label>
+                    <div id="holidaysList"></div>
+                    <button id="btnAddHoliday" class="btn-secondary">+ Добавить каникулы</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Праздничные дни:</label>
+                    <div id="specialHolidaysList"></div>
+                    <button id="btnAddSpecialHoliday" class="btn-secondary">+ Добавить праздник</button>
+                </div>
+
+                <button id="btnGenerate" class="btn-primary">Сгенерировать даты →</button>
+            </section>
+
+            <!-- Шаг 4: Результат -->
+            <section id="step4" class="step">
+                <h2>Шаг 4: Результат</h2>
+                <div id="resultInfo"></div>
+                <button id="btnDownload" class="btn-primary">Скачать .docx</button>
+                <button id="btnRestart" class="btn-secondary">Начать заново</button>
+            </section>
+        </main>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Обработка...</p>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+    </div>
+
+    <!-- Библиотеки -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- Наши скрипты -->
+    <script src="js/docx-parser.js?v=3"></script>
+    <script src="js/pdf-parser.js?v=3"></script>
+    <script src="js/date-generator.js?v=3"></script>
+    <script src="js/docx-builder.js?v=3"></script>
+    <script src="js/app.js?v=3"></script>
+</body>
+</html>
