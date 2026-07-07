@@ -51,21 +51,15 @@ class DocxBuilder {
             tableChildren.push(this.p(`по ${subject.toLowerCase()} для ${grade} класса`, 11, false));
 
             // Заголовки таблицы
-            const header1 = ['№ п/п', 'Тема урока', 'Количество часов', 'Количество часов', 'Количество часов', 'Дата проведения', 'Электронные цифровые\nобразовательные ресурсы'];
-            const header2 = ['№ п/п', 'Тема урока', 'Всего', 'Контрольные\nработы', 'Практические\nработы', 'Дата проведения', 'Электронные цифровые\nобразовательные ресурсы'];
+            const header = ['№ п/п', 'Тема урока', 'Всего', 'Контрольные\nработы', 'Практические\nработы', 'Дата проведения', 'Электронные цифровые\nобразовательные ресурсы'];
 
             const colWidths = [635, 7087, 1008, 1344, 1344, 1344, 3703];
 
             const tableRows = [];
 
-            // Первая строка заголовков
+            // Строка заголовков
             tableRows.push(new TableRow({
-                children: header1.map((text, i) => this.headerCell(text, colWidths[i]))
-            }));
-
-            // Вторая строка заголовков
-            tableRows.push(new TableRow({
-                children: header2.map((text, i) => this.headerCell(text, colWidths[i]))
+                children: header.map((text, i) => this.headerCell(text, colWidths[i]))
             }));
 
             // Строки с уроками
