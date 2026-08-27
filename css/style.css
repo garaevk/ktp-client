@@ -378,7 +378,7 @@ h2 {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 22px;
-    background: #ff5722;
+    background: #667eea;
     color: white;
     border-radius: 8px;
     text-decoration: none;
@@ -387,9 +387,9 @@ h2 {
 }
 
 .btn-report:hover {
-    background: #e64a19;
+    background: #5a6bd6;
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(255, 87, 34, 0.35);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.35);
     text-decoration: none;
 }
 
