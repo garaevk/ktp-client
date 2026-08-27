@@ -379,11 +379,14 @@ h2 {
     margin-top: 10px;
     padding: 10px 22px;
     background: #667eea;
-    color: white;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s;
+}
+
+.contacts a.btn-report {
+    color: #ffffff;
 }
 
 .btn-report:hover {
