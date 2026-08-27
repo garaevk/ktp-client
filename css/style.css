@@ -373,3 +373,69 @@ h2 {
 .contacts a:hover {
     text-decoration: underline;
 }
+
+.btn-report {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 22px;
+    background: #ff5722;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-report:hover {
+    background: #e64a19;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 87, 34, 0.35);
+    text-decoration: none;
+}
+
+.rating-block {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff8e1;
+    border: 2px solid #ffd54f;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.rating-block p {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.rating-scale {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.rating-star {
+    font-size: 2.2em;
+    background: none;
+    border: none;
+    color: #d0d0d0;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.rating-star:hover {
+    color: #ffc107;
+    transform: scale(1.2);
+}
+
+.rating-star.active {
+    color: #ffc107;
+}
+
+.rating-thanks {
+    margin-top: 12px;
+    color: #2e7d32;
+    font-weight: 600;
+}

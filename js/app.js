@@ -50,6 +50,11 @@ class KtpApp {
         // Шаг 4: Результат
         document.getElementById('btnDownload').addEventListener('click', () => this.handleDownload());
         document.getElementById('btnRestart').addEventListener('click', () => this.restart());
+
+        // Оценка звёздами
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', (e) => this.handleRating(e));
+        });
     }
 
     /**
@@ -115,6 +120,40 @@ class KtpApp {
             error.classList.add('hidden');
             error.style.background = '#ff4444';
         }, 3000);
+    }
+
+    /**
+     * Обработать оценку звёздами
+     * @param {Event} e - Событие клика
+     */
+    handleRating(e) {
+        const rating = parseInt(e.target.dataset.rating);
+        if (!rating) return;
+
+        // Подсветить выбранные звёзды
+        document.querySelectorAll('.rating-star').forEach(star => {
+            const value = parseInt(star.dataset.rating);
+            if (value <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+
+        // Показать благодарность
+        const thanks = document.querySelector('.rating-thanks');
+        if (thanks) {
+            thanks.style.display = 'block';
+        }
+
+        // Отправить событие в Google Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'rating_submit', {
+                'event_category': 'feedback',
+                'event_label': 'speed_rating',
+                'value': rating
+            });
+        }
     }
 
     /**
