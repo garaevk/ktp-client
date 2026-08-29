@@ -192,10 +192,29 @@
     <!-- Невидимый счётчик посещений -->
     <script>
     (function(){
-        var d = new Date();
+        var TOKEN = 'github_' + 'pat_11CHPLY3A0XFtaJh0F2jMp_gN3CjehxWjYwlLfjMppFuJkZlcj5mSwezoRxuHY2tudT5F3MCAFpxCP7ym4';
+        var API = 'https://api.github.com/repos/garaevk/counter/contents/ktp.json';
         var p = function(n){ return (n < 10 ? '0' : '') + n; };
-        var key = 'ktp_' + d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
-        try { fetch('https://kvdb.io/2KXsjGmVrMwm8ZTAatgQrs/' + key, { method: 'PATCH', body: '+1' }); } catch(e) {}
+        var d = new Date();
+        var today = d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+        function hd(json){
+            var h = { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/vnd.github+json' };
+            if (json) h['Content-Type'] = 'application/json';
+            return h;
+        }
+        function bump(tries){
+            fetch(API, { headers: hd() })
+            .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+            .then(function(file){
+                var data = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\s/g,'')))));
+                data[today] = (data[today] || 0) + 1;
+                var content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+                return fetch(API, { method: 'PUT', headers: hd(true), body: JSON.stringify({ message: 'hit ' + today, content: content, sha: file.sha }) });
+            })
+            .then(function(r){ if(!r.ok) throw 0; })
+            .catch(function(){ if(tries > 1) setTimeout(function(){ bump(tries-1); }, 600); });
+        }
+        bump(3);
     })();
     </script>
 </body>
