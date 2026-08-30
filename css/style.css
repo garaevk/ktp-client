@@ -442,3 +442,54 @@ h2 {
     color: #2e7d32;
     font-weight: 600;
 }
+
+.header-sub {
+    max-width: 700px;
+    margin: 10px auto 0;
+    font-size: 1.05em;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+.seo {
+    padding: 30px 40px 40px;
+    border-top: 1px solid #e9ecef;
+    background: #fafbff;
+}
+
+.seo h2 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+}
+
+.seo h3 {
+    color: #444;
+    margin: 20px 0 10px;
+    font-size: 1.2em;
+}
+
+.seo p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.seo details {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+
+.seo details summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #333;
+}
+
+.seo details p {
+    margin: 10px 0 0;
+    font-size: 0.95em;
+}

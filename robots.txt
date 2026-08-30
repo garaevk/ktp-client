@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://garaevk.github.io/ktp-client/sitemap.xml
