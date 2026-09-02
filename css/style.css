@@ -493,3 +493,50 @@ h2 {
     margin: 10px 0 0;
     font-size: 0.95em;
 }
+
+.subscribe-block {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f0f4ff;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.subscribe-block p {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.subscribe-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sub-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.sub-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+}
+
+.sub-btn.vk {
+    background: #0077ff;
+}
+
+.sub-btn.max {
+    background: #667eea;
+}
