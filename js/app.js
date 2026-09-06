@@ -250,6 +250,7 @@ class KtpApp {
             this.calendarData.specialHolidays.forEach(sh => this.addSpecialHoliday(sh));
         } else if (!pdfUploaded) {
             // PDF не загружен — дефолтные праздники 2026-2027
+            this.addSpecialHoliday({ date: '2027-02-23', name: 'День защитника Отечества' });
             this.addSpecialHoliday({ date: '2027-03-08', name: 'Международный женский день' });
             this.addSpecialHoliday({ date: '2027-03-09', name: 'Выходной (перенос)' });
             this.addSpecialHoliday({ date: '2027-05-01', name: 'Праздник Весны и Труда' });

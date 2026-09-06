@@ -16,6 +16,7 @@ const DEFAULT_HOLIDAY_RANGES = [
 ];
 
 const DEFAULT_SPECIFIC_HOLIDAYS = [
+    { date: '2027-02-23', name: 'День защитника Отечества' },
     { date: '2027-03-08', name: 'Международный женский день' },
     { date: '2027-03-09', name: 'Выходной (перенос)' },
     { date: '2027-05-01', name: 'Праздник Весны и Труда' },
