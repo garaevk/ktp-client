@@ -4,6 +4,20 @@
 class PdfParser {
     constructor() {
         this.pdfDoc = null;
+        this.monthNames = {
+            'января': 0, 'январь': 0, 'янв': 0,
+            'февраля': 1, 'февраль': 1, 'фев': 1,
+            'марта': 2, 'март': 2, 'мар': 2,
+            'апреля': 3, 'апрель': 3, 'апр': 3,
+            'мая': 4, 'май': 4,
+            'июня': 5, 'июнь': 5, 'июн': 5,
+            'июля': 6, 'июль': 6, 'июл': 6,
+            'августа': 7, 'август': 7, 'авг': 7,
+            'сентября': 8, 'сентябрь': 8, 'сен': 8,
+            'октября': 9, 'октябрь': 9, 'окт': 9,
+            'ноября': 10, 'ноябрь': 10, 'ноя': 10,
+            'декабря': 11, 'декабрь': 11, 'дек': 11
+        };
     }
 
     /**
@@ -180,34 +194,125 @@ class PdfParser {
             }
         }
 
+        // Паттерн: "Каникулы: D month - D month YYYY года" (один год в конце)
+        const holidayWordPattern = /каникулы[:\s]+(\d{1,2})\s+([а-яё]+)\s*[-–]\s*(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
+        let hwMatch;
+        while ((hwMatch = holidayWordPattern.exec(text)) !== null) {
+            const start = this.parseDate(`${hwMatch[1]} ${hwMatch[2]} ${hwMatch[5]}`);
+            const end = this.parseDate(`${hwMatch[3]} ${hwMatch[4]} ${hwMatch[5]}`);
+            if (start && end) {
+                const exists = result.holidays.some(h =>
+                    this.formatDate(h.start) === this.formatDate(start) && this.formatDate(h.end) === this.formatDate(end)
+                );
+                if (!exists) {
+                    result.holidays.push({ name: 'Каникулы', start, end });
+                }
+            }
+        }
+
+        // Паттерн: "Каникулы: D month YYYY - D month YYYY" (два года)
+        const holidayWordPattern2 = /каникулы[:\s]+(\d{1,2})\s+([а-яё]+)\s+(\d{4})\s*[-–]\s*(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
+        let hw2Match;
+        while ((hw2Match = holidayWordPattern2.exec(text)) !== null) {
+            const start = this.parseDate(`${hw2Match[1]} ${hw2Match[2]} ${hw2Match[3]}`);
+            const end = this.parseDate(`${hw2Match[4]} ${hw2Match[5]} ${hw2Match[6]}`);
+            if (start && end) {
+                const exists = result.holidays.some(h =>
+                    this.formatDate(h.start) === this.formatDate(start) && this.formatDate(h.end) === this.formatDate(end)
+                );
+                if (!exists) {
+                    result.holidays.push({ name: 'Каникулы', start, end });
+                }
+            }
+        }
+
+        // Паттерн: "Каникулы: D month - D month" (без года, берём из контекста)
+        const holidayWordPattern3 = /каникулы[:\s]+(\d{1,2})\s+([а-яё]+)\s*[-–]\s*(\d{1,2})\s+([а-яё]+)/gi;
+        let hw3Match;
+        while ((hw3Match = holidayWordPattern3.exec(text)) !== null) {
+            // Ищем год рядом с последним месяцем
+            const afterContext = text.substring(hw3Match.index, hw3Match.index + hw3Match[0].length + 20);
+            const yearInContext = afterContext.match(/(\d{4})/);
+            if (yearInContext) {
+                const year = parseInt(yearInContext[1]);
+                const start = this.parseDate(`${hw3Match[1]} ${hw3Match[2]} ${year}`);
+                const end = this.parseDate(`${hw3Match[3]} ${hw3Match[4]} ${year}`);
+                if (start && end) {
+                    const exists = result.holidays.some(h =>
+                        this.formatDate(h.start) === this.formatDate(start) && this.formatDate(h.end) === this.formatDate(end)
+                    );
+                    if (!exists) {
+                        result.holidays.push({ name: 'Каникулы', start, end });
+                    }
+                }
+            }
+        }
+
+        // Паттерн: "Начало занятий: D month YYYY года" и "Окончание занятий: D month YYYY года"
+        // Собираем начальную и конечную даты для создания одной четверти
+        let yearStart = null;
+        let yearEnd = null;
+
+        const startPattern = /начал[ао]\s+занятий[:\s]+(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
+        let stMatch;
+        while ((stMatch = startPattern.exec(text)) !== null) {
+            const d = this.parseDate(`${stMatch[1]} ${stMatch[2]} ${stMatch[3]}`);
+            if (d && !yearStart) yearStart = d;
+        }
+
+        const endPattern = /окончани[ея]\s+занятий[:\s]+(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
+        let enMatch;
+        while ((enMatch = endPattern.exec(text)) !== null) {
+            const d = this.parseDate(`${enMatch[1]} ${enMatch[2]} ${enMatch[3]}`);
+            if (d && !yearEnd) yearEnd = d;
+        }
+
+        // Если нашли начало и конец, создаём одну четверть на весь учебный год
+        if (yearStart && yearEnd) {
+            result.quarters.push({
+                name: 'Учебный год',
+                start: yearStart,
+                end: yearEnd
+            });
+        }
+
         return result;
     }
 
     /**
-     * Распарсить дату из строки
-     * @param {string} dateStr - Строка даты (ДД.ММ.ГГГГ)
+     * Распарсить дату из строки (DD.MM.YYYY или "D month YYYY")
+     * @param {string} dateStr - Строка даты
      * @returns {Date} - Объект Date
      */
     parseDate(dateStr) {
         if (!dateStr) return null;
-        
-        // Убираем лишние пробелы и нормализуем разделители
-        const cleaned = dateStr.trim().replace(/\s+/g, '');
-        const parts = cleaned.split(/[.\-\/]/);
-        
-        if (parts.length !== 3) {
-            return null;
+
+        const cleaned = dateStr.trim().replace(/\s+/g, ' ');
+
+        // Формат DD.MM.YYYY
+        const dotMatch = cleaned.match(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{4})/);
+        if (dotMatch) {
+            const day = parseInt(dotMatch[1]);
+            const month = parseInt(dotMatch[2]) - 1;
+            const year = parseInt(dotMatch[3]);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year) && day >= 1 && day <= 31 && month >= 0 && month <= 11) {
+                return new Date(year, month, day);
+            }
         }
-        
-        const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]) - 1; // Месяцы в JS начинаются с 0
-        const year = parseInt(parts[2]);
-        
-        if (isNaN(day) || isNaN(month) || isNaN(year) || day < 1 || day > 31 || month < 0 || month > 11) {
-            return null;
+
+        // Формат "D month YYYY" (русские названия месяцев)
+        const wordMatch = cleaned.match(/(\d{1,2})\s+([а-яё]+)\s+(\d{4})/i);
+        if (wordMatch) {
+            const day = parseInt(wordMatch[1]);
+            const monthName = wordMatch[2].toLowerCase();
+            const year = parseInt(wordMatch[3]);
+            const month = this.monthNames[monthName];
+            if (!isNaN(day) && month !== undefined && !isNaN(year) && day >= 1 && day <= 31) {
+                return new Date(year, month, day);
+            }
         }
-        
-        return new Date(year, month, day);
+
+        return null;
     }
 
     /**
