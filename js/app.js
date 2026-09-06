@@ -227,11 +227,11 @@ class KtpApp {
             // PDF распарсен успешно — берём из него
             this.calendarData.quarters.forEach(q => this.addQuarter(q));
         } else if (!pdfUploaded) {
-            // PDF не загружен — дефолтные 2025-2026
-            this.addQuarter({ name: 'I четверть', start: '2025-09-01', end: '2025-10-26' });
-            this.addQuarter({ name: 'II четверть', start: '2025-11-07', end: '2025-12-30' });
-            this.addQuarter({ name: 'III четверть', start: '2026-01-12', end: '2026-03-27' });
-            this.addQuarter({ name: 'IV четверть', start: '2026-04-06', end: '2026-05-26' });
+            // PDF не загружен — дефолтные 2026-2027
+            this.addQuarter({ name: 'I четверть', start: '2026-09-01', end: '2026-10-28' });
+            this.addQuarter({ name: 'II четверть', start: '2026-11-09', end: '2026-12-30' });
+            this.addQuarter({ name: 'III четверть', start: '2027-01-10', end: '2027-03-31' });
+            this.addQuarter({ name: 'IV четверть', start: '2027-04-05', end: '2027-05-26' });
         }
         // Если PDF загружен, но четверти не распарсились — оставляем пустым
 
@@ -239,9 +239,9 @@ class KtpApp {
         if (pdfUploaded && this.calendarData.holidays && this.calendarData.holidays.length > 0) {
             this.calendarData.holidays.forEach(h => this.addHoliday(h));
         } else if (!pdfUploaded) {
-            this.addHoliday({ name: 'Осенние каникулы', start: '2025-10-27', end: '2025-11-06' });
-            this.addHoliday({ name: 'Зимние каникулы', start: '2025-12-31', end: '2026-01-11' });
-            this.addHoliday({ name: 'Весенние каникулы', start: '2026-03-28', end: '2026-04-05' });
+            this.addHoliday({ name: 'Осенние каникулы', start: '2026-10-29', end: '2026-11-08' });
+            this.addHoliday({ name: 'Зимние каникулы', start: '2026-12-31', end: '2027-01-09' });
+            this.addHoliday({ name: 'Весенние каникулы', start: '2027-04-01', end: '2027-04-04' });
         }
 
         // Праздничные дни
@@ -249,14 +249,12 @@ class KtpApp {
             // PDF распарсен — берём праздники из него
             this.calendarData.specialHolidays.forEach(sh => this.addSpecialHoliday(sh));
         } else if (!pdfUploaded) {
-            // PDF не загружен — дефолтные праздники 2025-2026
-            this.addSpecialHoliday({ date: '2025-11-04', name: 'День народного единства' });
-            this.addSpecialHoliday({ date: '2025-11-06', name: 'Дополнительный выходной' });
-            this.addSpecialHoliday({ date: '2026-02-23', name: 'День защитника Отечества' });
-            this.addSpecialHoliday({ date: '2026-03-08', name: 'Международный женский день' });
-            this.addSpecialHoliday({ date: '2026-03-09', name: 'Выходной (перенос)' });
-            this.addSpecialHoliday({ date: '2026-05-01', name: 'Праздник Весны и Труда' });
-            this.addSpecialHoliday({ date: '2026-05-09', name: 'День Победы' });
+            // PDF не загружен — дефолтные праздники 2026-2027
+            this.addSpecialHoliday({ date: '2027-03-08', name: 'Международный женский день' });
+            this.addSpecialHoliday({ date: '2027-03-09', name: 'Выходной (перенос)' });
+            this.addSpecialHoliday({ date: '2027-05-01', name: 'Праздник Весны и Труда' });
+            this.addSpecialHoliday({ date: '2027-05-10', name: 'Выходной' });
+            this.addSpecialHoliday({ date: '2027-05-16', name: 'Выходной' });
         }
     }
 
