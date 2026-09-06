@@ -230,7 +230,7 @@ class KtpApp {
             // PDF не загружен — дефолтные 2026-2027
             this.addQuarter({ name: 'I четверть', start: '2026-09-01', end: '2026-10-28' });
             this.addQuarter({ name: 'II четверть', start: '2026-11-09', end: '2026-12-30' });
-            this.addQuarter({ name: 'III четверть', start: '2027-01-10', end: '2027-03-26' });
+            this.addQuarter({ name: 'III четверть', start: '2027-01-11', end: '2027-03-26' });
             this.addQuarter({ name: 'IV четверть', start: '2027-04-05', end: '2027-05-26' });
         }
         // Если PDF загружен, но четверти не распарсились — оставляем пустым
