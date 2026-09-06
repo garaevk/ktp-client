@@ -5,14 +5,14 @@
 const DEFAULT_QUARTERS = [
     { name: 'I четверть',  start: '2026-09-01', end: '2026-10-28' },
     { name: 'II четверть', start: '2026-11-09', end: '2026-12-30' },
-    { name: 'III четверть', start: '2027-01-10', end: '2027-03-31' },
+    { name: 'III четверть', start: '2027-01-10', end: '2027-03-26' },
     { name: 'IV четверть', start: '2027-04-05', end: '2027-05-26' },
 ];
 
 const DEFAULT_HOLIDAY_RANGES = [
     { name: 'Осенние каникулы',  start: '2026-10-29', end: '2026-11-08' },
     { name: 'Зимние каникулы',   start: '2026-12-31', end: '2027-01-09' },
-    { name: 'Весенние каникулы', start: '2027-04-01', end: '2027-04-04' },
+    { name: 'Весенние каникулы', start: '2027-03-27', end: '2027-04-04' },
 ];
 
 const DEFAULT_SPECIFIC_HOLIDAYS = [
