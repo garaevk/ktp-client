@@ -493,3 +493,40 @@ h2 {
 .sub-btn.max {
     background: #667eea;
 }
+
+.seo-table {
+    width: 100%;
+    max-width: 640px;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 0.95em;
+}
+
+.seo-table th,
+.seo-table td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.seo-table th {
+    background: #667eea;
+    color: #fff;
+    font-weight: 600;
+}
+
+.seo-table tr:nth-child(even) td {
+    background: #f5f7ff;
+}
+
+.seo-adv {
+    background: #eefbf3;
+    border: 2px solid #34a853;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 16px 0;
+}
+
+.seo-adv strong {
+    color: #1a8a3f;
+}
