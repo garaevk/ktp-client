@@ -201,6 +201,8 @@ class KtpApp {
      * Инициализировать настройки дат
      */
     initDateConfig() {
+        const pdfUploaded = this.calendarData !== null;
+
         // Дни недели (по умолчанию Вт и Чт)
         const daysOfWeek = [2, 4];
         
@@ -220,49 +222,41 @@ class KtpApp {
             }
         });
 
-        // Четверти — если PDF не распарсился, добавить дефолтные
-        if (this.calendarData && this.calendarData.quarters && this.calendarData.quarters.length > 0) {
+        // Четверти
+        if (pdfUploaded && this.calendarData.quarters && this.calendarData.quarters.length > 0) {
+            // PDF распарсен успешно — берём из него
             this.calendarData.quarters.forEach(q => this.addQuarter(q));
-        } else {
-            // Дефолтные четверти 2025-2026
+        } else if (!pdfUploaded) {
+            // PDF не загружен — дефолтные 2025-2026
             this.addQuarter({ name: 'I четверть', start: '2025-09-01', end: '2025-10-26' });
             this.addQuarter({ name: 'II четверть', start: '2025-11-07', end: '2025-12-30' });
             this.addQuarter({ name: 'III четверть', start: '2026-01-12', end: '2026-03-27' });
             this.addQuarter({ name: 'IV четверть', start: '2026-04-06', end: '2026-05-26' });
         }
+        // Если PDF загружен, но четверти не распарсились — оставляем пустым
 
         // Каникулы
-        if (this.calendarData && this.calendarData.holidays && this.calendarData.holidays.length > 0) {
+        if (pdfUploaded && this.calendarData.holidays && this.calendarData.holidays.length > 0) {
             this.calendarData.holidays.forEach(h => this.addHoliday(h));
-        } else {
+        } else if (!pdfUploaded) {
             this.addHoliday({ name: 'Осенние каникулы', start: '2025-10-27', end: '2025-11-06' });
             this.addHoliday({ name: 'Зимние каникулы', start: '2025-12-31', end: '2026-01-11' });
             this.addHoliday({ name: 'Весенние каникулы', start: '2026-03-28', end: '2026-04-05' });
         }
 
-        // Праздничные дни — всегда начинаем с дефолтных
-        const defaultHolidays = [
-            { date: '2025-11-04', name: 'День народного единства' },
-            { date: '2025-11-06', name: 'Дополнительный выходной' },
-            { date: '2026-02-23', name: 'День защитника Отечества' },
-            { date: '2026-03-08', name: 'Международный женский день' },
-            { date: '2026-03-09', name: 'Выходной (перенос)' },
-            { date: '2026-05-01', name: 'Праздник Весны и Труда' },
-            { date: '2026-05-09', name: 'День Победы' }
-        ];
-        
-        // Добавляем дефолтные праздники
-        defaultHolidays.forEach(sh => this.addSpecialHoliday(sh));
-        
-        // Добавляем праздники из PDF, которых нет в дефолтных
-        if (this.calendarData && this.calendarData.specialHolidays && this.calendarData.specialHolidays.length > 0) {
-            this.calendarData.specialHolidays.forEach(sh => {
-                const dateStr = this.formatDateForInput(sh.date);
-                const exists = defaultHolidays.some(dh => this.formatDateForInput(dh.date) === dateStr);
-                if (!exists) {
-                    this.addSpecialHoliday(sh);
-                }
-            });
+        // Праздничные дни
+        if (pdfUploaded && this.calendarData.specialHolidays && this.calendarData.specialHolidays.length > 0) {
+            // PDF распарсен — берём праздники из него
+            this.calendarData.specialHolidays.forEach(sh => this.addSpecialHoliday(sh));
+        } else if (!pdfUploaded) {
+            // PDF не загружен — дефолтные праздники 2025-2026
+            this.addSpecialHoliday({ date: '2025-11-04', name: 'День народного единства' });
+            this.addSpecialHoliday({ date: '2025-11-06', name: 'Дополнительный выходной' });
+            this.addSpecialHoliday({ date: '2026-02-23', name: 'День защитника Отечества' });
+            this.addSpecialHoliday({ date: '2026-03-08', name: 'Международный женский день' });
+            this.addSpecialHoliday({ date: '2026-03-09', name: 'Выходной (перенос)' });
+            this.addSpecialHoliday({ date: '2026-05-01', name: 'Праздник Весны и Труда' });
+            this.addSpecialHoliday({ date: '2026-05-09', name: 'День Победы' });
         }
     }
 

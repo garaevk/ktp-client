@@ -65,18 +65,27 @@ class PdfParser {
      * @returns {Object} - Календарные данные
      */
     parseCalendarData(text) {
+        console.log('[PdfParser] Длина текста:', text.length);
+        console.log('[PdfParser] Первые 500 символов:', text.substring(0, 500));
+
         const result = {
             quarters: [],
             holidays: [],
             specialHolidays: []
         };
 
-        // Ищем четверти (формат: "1 четверть: 01.09.2025 - 26.10.2025")
+        // Ищем четверти
         const quarterPatterns = [
+            // С тире: "1 четверть: 01.09.2025 - 26.10.2025"
             /(\d+)\s*четверть[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–]\s*(\d{1,2}\.\d{1,2}\.\d{4})/gi,
             /(\d+)\s*полугодие[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–]\s*(\d{1,2}\.\d{1,2}\.\d{4})/gi,
             /I{1,3}\s+четверть[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–]\s*(\d{1,2}\.\d{1,2}\.\d{4})/gi,
-            /I{1,2}\s+полугодие[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–]\s*(\d{1,2}\.\d{1,2}\.\d{4})/gi
+            /I{1,2}\s+полугодие[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–]\s*(\d{1,2}\.\d{1,2}\.\d{4})/gi,
+            // Без тире: "1 четверть 01.09.2026 26.10.2026"
+            /(\d+)\s*четверть[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s+(\d{1,2}\.\d{1,2}\.\d{4})/gi,
+            /I{1,3}\s+четверть[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s+(\d{1,2}\.\d{1,2}\.\d{4})/gi,
+            // С Romans без тире
+            /(I{1,3})\s+четверть[:\s]+(\d{1,2}\.\d{1,2}\.\d{4})\s+(\d{1,2}\.\d{1,2}\.\d{4})/gi
         ];
 
         for (const pattern of quarterPatterns) {
@@ -89,7 +98,6 @@ class PdfParser {
                         end: this.parseDate(match[3])
                     });
                 } else if (match[1] && match[2]) {
-                    // For Roman numeral patterns
                     const name = match[0].split(/[:\s]+/)[0].trim();
                     result.quarters.push({
                         name: name,
@@ -99,6 +107,8 @@ class PdfParser {
                 }
             }
         }
+
+        console.log('[PdfParser] Найдено четвертей:', result.quarters.length, result.quarters);
 
         // Ищем каникулы по ключевому слову "каникул"
         const kwKanikul = /каникул/gi;
@@ -275,6 +285,11 @@ class PdfParser {
                 end: yearEnd
             });
         }
+
+        console.log('[PdfParser] Итого четвертей:', result.quarters.length);
+        console.log('[PdfParser] Итого каникул:', result.holidays.length);
+        console.log('[PdfParser] Итого праздников:', result.specialHolidays.length);
+        console.log('[PdfParser] Результат:', result);
 
         return result;
     }
