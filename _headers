@@ -1,2 +1,2 @@
 /*
-  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'; script-src 'unsafe-inline'
+  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data: https://mc.yandex.ru; connect-src 'self' https://mc.yandex.ru; script-src 'unsafe-inline' https://mc.yandex.ru
